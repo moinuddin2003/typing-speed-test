@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
+
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="script.js"></script>
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+  
+  <title>Frontend Mentor | Typing Speed Test</title>
+
+  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  <style>
+    .attribution { font-size: 11px; text-align: center; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="leftside">
+      <img src="./assets/images/logo-large.svg" alt="Typing Speed Test Logo">
+  </div>
+  <div class="rightside">
+    <img src="./assets/images/icon-personal-best.svg" alt="Icon Personal Best">
+    Personal best: <!-- PB --> WPM
+  </div>
+</header>
+
+<main>
+  <div class="top-bar">
+    <section class="stats-row">
+      <div class="stat">
+        <span class="stat-label">WPM:</span>
+        <span class="stat-value" id="wpm">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Accuracy:</span>
+        <span class="stat-value" id="accuracy">100%</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Time:</span>
+        <span class="stat-value" id="time">0:60</span>
+      </div>
+    </section>
+
+    <section class="controls-row">
+      <div class="control-group">
+        <span class="section-label">Difficulty:</span>
+        <button type="button" class="control-button">Easy</button>
+        <button type="button" class="control-button">Medium</button>
+        <button type="button" class="control-button selected">Hard</button>
+      </div>
+      <div class="control-group">
+        <span class="section-label">Mode:</span>
+        <button type="button" class="control-button selected">Timed (60s)</button>
+        <button type="button" class="control-button">Passage</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="typing-area">
+    <div class="passage" id="passage">
+      <!-- Passage text will appear here -->
+    </div>
+    <button type="button" class="start-button">Start Typing Test</button>
+    <p class="hint">Or click the text and start typing</p>
+  </section>
+
+  <section class="results hidden" id="results">
+    <img src="./assets/images/icon-completed.svg">
+    <h2>Baseline Established</h2>
+    <p>You've set the bar. Now the real challenge begins -- Time to beat it</p>
+    <div class="result-grid">
+      <div class="result-item">
+        <span class="result-label">WPM</span>
+        <span class="result-value" id="result-wpm">0</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Accuracy</span>
+        <span class="result-value" id="result-accuracy">0%</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">Characters</span>
+        <span class="result-value" id="result-chars">0/0</span>
+      </div>
+    </div>
+    <button type="button" class="restart-button">Beat this Score
+      <img src="./assets/images/icon-restart.svg">
+    </button>
+  </section>
+</main>
+  <div class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>. 
+    Coded by <a href="#">Your Name Here</a>.
+  </div>
+</body>
+</html>
