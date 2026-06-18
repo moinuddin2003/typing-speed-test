@@ -1,44 +1,52 @@
-window.addEventListener("DOMContentLoaded", () => {
-    const passageEl = document.getElementById("passage");
-    const startButton = document.querySelector(".start-button");
-    const hintEl = document.querySelector(".hint");
-    const difficultyButtons = document.querySelectorAll(".control-group:first-child .control-button");
+// import api from "./data.json";
+const passage = document.getElementById("passage");
+const startBtn = document.getElementById("startBtn");
+const difficulty = document.querySelectorAll(
+  ".control-group:first-child .control-button",
+);
 
-    let currentDifficulty = "hard";
+async function loadPassage() {
+  try {
+    const response = await fetch("./data.json");
+    const data = await response.json();
+    console.log(data);
+    return data;
+    // console.log(data.easy[0]);
+    // console.log(data.easy[Math.round(Math.random() * length)]);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
-    async function loadPassage(difficulty = "hard") {
-        try {
-            const response = await fetch("./data.json");
-            const data = await response.json();
-            const passages = data[difficulty] || data.hard;
-            console.log(passages)
-            const randomIndex = Math.floor(Math.random() * passages.length);
-            passageEl.textContent = passages[randomIndex].text;
-            passageEl.classList.add("blur");
-            startButton.classList.remove("hidden");
-            hintEl.textContent = "Or click the text and start typing";
-        } catch (error) {
-            console.error(error);
-            passageEl.textContent = "Unable to load passage.";
-            passageEl.classList.add("blur");
+async function difficultyFuntion() {
+  const data = await loadPassage();
+
+  if (data) {
+    difficulty.forEach((button) => {
+      passage.classList.add("blur");
+      console.log(button);
+      button.addEventListener("click", () => {
+        let buttonText = button.textContent.trim().toLowerCase();
+        if (buttonText === "easy") {
+          let easy = data.easy[Math.round(Math.random() * 10)];
+          console.log(easy);
+          passage.innerText = easy.text;
+        } else if (buttonText === "medium") {
+          let medium = data.medium[Math.round(Math.random() * 10)];
+          console.log(medium);
+          passage.innerText = medium.text;
+        } else {
+          let hard = data.hard[Math.round(Math.random() * 10)];
+          console.log(hard);
+          passage.innerText = hard.text;
         }
-    }
-
-    startButton.addEventListener("click", () => {
-        passageEl.classList.remove("blur");
-        hintEl.textContent = "";
-        startButton.classList.add("hidden");
+      });
     });
+  }
 
-    difficultyButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            difficultyButtons.forEach(btn => btn.classList.remove("selected"));
-            button.classList.add("selected");
+  startBtn.addEventListener("click", () => {
+    passage.classList.remove("blur");
+  });
+}
 
-            currentDifficulty = button.textContent.trim().toLowerCase();
-            loadPassage(currentDifficulty);
-        });
-    });
-
-    loadPassage(currentDifficulty);
-});
+difficultyFuntion();
