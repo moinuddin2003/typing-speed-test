@@ -4,6 +4,7 @@ const startBtn = document.getElementById("startBtn");
 const difficulty = document.querySelectorAll(
   ".control-group:first-child .control-button",
 );
+const hint = document.querySelector(".hint");
 
 async function loadPassage() {
   try {
@@ -19,13 +20,23 @@ async function loadPassage() {
 }
 
 async function difficultyFuntion() {
+  passage.classList.add("blur");
+
   const data = await loadPassage();
 
   if (data) {
+    passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
+
     difficulty.forEach((button) => {
-      passage.classList.add("blur");
-      console.log(button);
       button.addEventListener("click", () => {
+        console.log(difficulty);
+        difficulty.forEach((btn) => {
+          btn.classList.remove("selected");
+          // te poore pr se sleected ura dega
+        });
+        button.classList.add("selected");
+        // ye jispr click hogi uspr lgyga
+
         let buttonText = button.textContent.trim().toLowerCase();
         if (buttonText === "easy") {
           let easy = data.easy[Math.round(Math.random() * 10)];
@@ -46,6 +57,8 @@ async function difficultyFuntion() {
 
   startBtn.addEventListener("click", () => {
     passage.classList.remove("blur");
+    startBtn.classList.add("hidden");
+    hint.classList.add("hidden");
   });
 }
 
