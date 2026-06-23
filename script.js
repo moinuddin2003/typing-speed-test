@@ -4,6 +4,11 @@ const startBtn = document.getElementById("startBtn");
 const difficulty = document.querySelectorAll(
   ".control-group:first-child .control-button",
 );
+
+const mode = document.querySelectorAll(
+  ".control-group:last-child .control-button",
+);
+console.log(mode);
 const hint = document.querySelector(".hint");
 
 async function loadPassage() {
@@ -53,13 +58,47 @@ async function difficultyFuntion() {
         }
       });
     });
+
+    mode.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        mode.forEach((button) => {
+          button.classList.remove("selected");
+        });
+        btn.classList.add("selected");
+      });
+    });
   }
 
   startBtn.addEventListener("click", () => {
     passage.classList.remove("blur");
     startBtn.classList.add("hidden");
     hint.classList.add("hidden");
+
+    const selectMode = document.querySelectorAll(
+      ".control-group:last-child .control-button.selected",
+    );
+
+    console.log(selectMode);
+
+    if (selectMode) {
+      let selectedMode = selectMode.textContent.trim().toLowerCase();
+      console.log(selectedMode);
+
+      if (selectedMode === "Timed (60s)") {
+        let timer = 60;
+        let timerInterval = setInterval(() => {
+          timer--;
+          console.log("time baqi he", timer);
+
+          if (timerInterval <= 0) {
+            clearInterval(timerInterval);
+            console.log("time up");
+          }
+        }, 1000);
+      } else {
+        passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
+      }
+    }
   });
 }
-
 difficultyFuntion();
