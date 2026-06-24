@@ -5,12 +5,13 @@ const difficulty = document.querySelectorAll(
   ".control-group:first-child .control-button",
 );
 
+const inputField = document.getElementById("textArea");
 const mode = document.querySelectorAll(
   ".control-group:last-child .control-button",
 );
 console.log(mode);
 const hint = document.querySelector(".hint");
-
+const timer = document.getElementById("timer");
 async function loadPassage() {
   try {
     const response = await fetch("./data.json");
@@ -46,15 +47,42 @@ async function difficultyFuntion() {
         if (buttonText === "easy") {
           let easy = data.easy[Math.round(Math.random() * 10)];
           console.log(easy);
-          passage.innerText = easy.text;
+          // passage.innerText = easy.text;
+          passage.textContent = "";
+          const splitEasy = easy.text.split("");
+          console.log(splitEasy);
+
+          splitEasy.forEach((char) => {
+            const span = document.createElement("span");
+
+            span.innerText = char;
+            passage.appendChild(span);
+            console.log(span);
+          });
         } else if (buttonText === "medium") {
           let medium = data.medium[Math.round(Math.random() * 10)];
           console.log(medium);
-          passage.innerText = medium.text;
+          passage.innerText = "";
+
+          const splitMedium = medium.text.split("");
+
+          splitMedium.forEach((char) => {
+            const span = document.createElement("span");
+            span.innerText = char;
+            passage.appendChild(span);
+          });
         } else {
           let hard = data.hard[Math.round(Math.random() * 10)];
           console.log(hard);
-          passage.innerText = hard.text;
+          passage.innerText = "";
+
+          const splitHard = hard.text.split("");
+
+          splitHard.forEach((char) => {
+            const span = document.createElement("span");
+            span.innerText = char;
+            passage.appendChild(span);
+          });
         }
       });
     });
@@ -73,8 +101,9 @@ async function difficultyFuntion() {
     passage.classList.remove("blur");
     startBtn.classList.add("hidden");
     hint.classList.add("hidden");
+    inputField.focus();
 
-    const selectMode = document.querySelectorAll(
+    const selectMode = document.querySelector(
       ".control-group:last-child .control-button.selected",
     );
 
@@ -84,21 +113,49 @@ async function difficultyFuntion() {
       let selectedMode = selectMode.textContent.trim().toLowerCase();
       console.log(selectedMode);
 
-      if (selectedMode === "Timed (60s)") {
-        let timer = 60;
+      if (selectedMode === "timed (60s)") {
+        let timer = 10;
         let timerInterval = setInterval(() => {
           timer--;
+          selectMode.textContent = `Time:${timer}s`;
           console.log("time baqi he", timer);
 
-          if (timerInterval <= 0) {
+          if (timer <= 0) {
             clearInterval(timerInterval);
+            passage.classList.add("blur");
             console.log("time up");
           }
         }, 1000);
-      } else {
-        passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
+      } else if (selectedMode === "passage") {
+        console.log("Passage mode shuru! Koi timer nahi chalega.");
+        // passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
       }
     }
+  });
+
+  inputField.addEventListener("input", () => {
+    const spans = passage.querySelectorAll("span");
+    console.log(spans);
+
+    const userTypedValue = inputField.value.split("");
+    console.log(userTypedValue);
+
+    spans.forEach((span, index) => {
+      const userChar = userTypedValue[index];
+      console.log(userChar);
+      if (userChar == null) {
+        // Agar user abhi tak is index tak nahi pohancha, toh purani classes hata do
+        span.classList.remove("correct", "incorrect");
+      } else if (userChar === span.innerText) {
+        // Agar user ka type kiya hua akshar span ke text se match ho gaya
+        span.classList.add("correct");
+        span.classList.remove("incorrect");
+      } else {
+        // Agar match nahi hua (galti ki)
+        span.classList.add("incorrect");
+        span.classList.remove("correct");
+      }
+    });
   });
 }
 difficultyFuntion();

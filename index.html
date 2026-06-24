@@ -87,18 +87,20 @@
           </div>
           <div class="control-group" id="mode">
             <span class="section-label">Mode:</span>
+            <button type="button" class="control-button">Timed (60s)</button>
             <button type="button" class="control-button selected">
-              Timed (60s)
+              Passage
             </button>
-            <button type="button" class="control-button">Passage</button>
           </div>
         </section>
       </div>
 
       <section class="typing-area">
+        <input type="text" id="textArea" class="hidden" />
         <div class="passage" id="passage">
           <!-- Passage text will appear here -->
         </div>
+
         <button type="button" class="start-button" id="startBtn">
           Start Typing Test
         </button>
