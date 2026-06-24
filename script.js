@@ -143,10 +143,15 @@ async function difficultyFuntion() {
     spans.forEach((span, index) => {
       const userChar = userTypedValue[index];
       console.log(userChar);
+      // console.log(span);
+      // console.log(index);
       if (userChar == null) {
-        // Agar user abhi tak is index tak nahi pohancha, toh purani classes hata do
-        span.classList.remove("correct", "incorrect");
-      } else if (userChar === span.innerText) {
+        span.classList.remove("correct", "incorrect", "cursor");
+
+        if (index === userTypedValue.length) {
+          span.classList.add("cursor");
+        }
+      } else if (userChar === span.textContent) {
         // Agar user ka type kiya hua akshar span ke text se match ho gaya
         span.classList.add("correct");
         span.classList.remove("incorrect");
