@@ -1,4 +1,10 @@
 // import api from "./data.json";
+const typingContainer = document.querySelector(".typing-area");
+const FinalResult = document.getElementById("results");
+
+const correctCharsDisplay = document.getElementById("correct-chars-count");
+const wrongCharsDisplay = document.getElementById("wrong-chars-count");
+
 const passage = document.getElementById("passage");
 const startBtn = document.getElementById("startBtn");
 const difficulty = document.querySelectorAll(
@@ -11,7 +17,11 @@ const mode = document.querySelectorAll(
 );
 console.log(mode);
 const hint = document.querySelector(".hint");
-const timer = document.getElementById("timer");
+
+let totalMistakes = 0;
+let secondPassed = 0;
+let timerInterval = 0;
+let selectedMode = "timed (60s)";
 async function loadPassage() {
   try {
     const response = await fetch("./data.json");
@@ -108,43 +118,89 @@ async function difficultyFuntion() {
     );
 
     console.log(selectMode);
+    // gives <button type="button" class="control-button selected">Time:0s</button>
 
     if (selectMode) {
-      let selectedMode = selectMode.textContent.trim().toLowerCase();
+      selectedMode = selectMode.textContent.trim().toLowerCase();
       console.log(selectedMode);
+      //gives timed (60sec)
 
-      if (selectedMode === "timed (60s)") {
-        let timer = 10;
-        let timerInterval = setInterval(() => {
+      const timerValue = document.getElementById("time");
+      let timer = 60;
+      timerInterval = setInterval(() => {
+        secondPassed++;
+        console.log(secondPassed);
+        if (selectedMode === "timed (60s)") {
           timer--;
-          selectMode.textContent = `Time:${timer}s`;
+          timerValue.textContent = `0:${timer}`;
           console.log("time baqi he", timer);
 
           if (timer <= 0) {
             clearInterval(timerInterval);
             passage.classList.add("blur");
+            inputField.disabled = true;
             console.log("time up");
+
+            typingContainer.classList.add("hidden");
+            FinalResult.classList.remove("hidden");
           }
-        }, 1000);
-      } else if (selectedMode === "passage") {
-        console.log("Passage mode shuru! Koi timer nahi chalega.");
-        // passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
-      }
+        } else if (selectedMode === "passage") {
+          console.log("Passage mode shuru! Koi timer nahi chalega.");
+          // passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
+        }
+      }, 1000);
     }
   });
 
-  inputField.addEventListener("input", () => {
+  inputField.addEventListener("input", (e) => {
     const spans = passage.querySelectorAll("span");
-    console.log(spans);
+    console.log("Spans bhai", spans);
 
     const userTypedValue = inputField.value.split("");
-    console.log(userTypedValue);
+    console.log("Use typed value", userTypedValue);
 
+    const lastInputIndex = userTypedValue.length - 1;
+    console.log(lastInputIndex);
+
+    if (e.inputType !== "deleteContentBackward" && lastInputIndex >= 0) {
+      const currentSpan = spans[lastInputIndex];
+      const currentChar = userTypedValue[lastInputIndex];
+
+      // user ne poora passage khatam kar liya?
+      if (
+        selectedMode === "passage" &&
+        userTypedValue.length === spans.length
+      ) {
+        // 1. Timer ko furan rokh do!
+        clearInterval(timerInterval);
+
+        inputField.disabled = true;
+
+        console.log(
+          "Zabardast! User ne passage khatam kar liya. Total seconds lage:",
+          secondPassed,
+        );
+
+        typingContainer.classList.add("hidden");
+        FinalResult.classList.remove("hidden");
+      }
+      if (currentChar !== currentSpan.textContent) {
+        totalMistakes++;
+        console.log("Total Mistakes Done So Far:", totalMistakes);
+      }
+    }
     spans.forEach((span, index) => {
       const userChar = userTypedValue[index];
       console.log(userChar);
       // console.log(span);
       // console.log(index);
+
+      span.classList.remove("correct", "incorrect", "cursor");
+
+      if (index === userTypedValue.length) {
+        span.classList.add("cursor");
+      }
+
       if (userChar == null) {
         span.classList.remove("correct", "incorrect", "cursor");
 
@@ -161,6 +217,51 @@ async function difficultyFuntion() {
         span.classList.remove("correct");
       }
     });
+
+    let accuracyVal = 100;
+    const accuracy = document.querySelectorAll("#accuracy , #result-accuracy");
+
+    if (userTypedValue.length > 0) {
+      let correctChar = userTypedValue.length - totalMistakes;
+
+      if (correctChar < 0) {
+        correctChar = 0;
+      }
+
+      accuracyVal = Math.round((correctChar / userTypedValue.length) * 100);
+    }
+
+    accuracy.forEach((element) => {
+      element.textContent = `${accuracyVal}%`;
+    });
+
+    let wpmVal = 0;
+    const wpm = document.querySelectorAll("#wpm, #result-wpm");
+
+    if (secondPassed > 0 && userTypedValue.length > 0) {
+      totalWords = userTypedValue.length / 5;
+      console.log(totalWords);
+      timePassedInMinutes = secondPassed / 60;
+      console.log(timePassedInMinutes);
+      wpmVal = Math.round(totalWords / timePassedInMinutes);
+    }
+
+    wpm.forEach((element) => {
+      element.textContent = wpmVal;
+    });
+
+    correctCharsDisplay.textContent = correctChar;
+    wrongCharsDisplay.textContent = totalMistakes;
+  });
+
+  // Screen par kahin bhi click ho, focus wapas input box par le aao
+  document.addEventListener("click", () => {
+    // Pehle check karo ke game khatam toh nahi hui (yani input disabled toh nahi hai)
+    // Aur startBtn hidden hai (yani game shuru ho chuki hai)
+    if (!inputField.disabled && startBtn.classList.contains("hidden")) {
+      inputField.focus();
+      console.log("Focus wapas input box par le aaya gaya!");
+    }
   });
 }
 difficultyFuntion();

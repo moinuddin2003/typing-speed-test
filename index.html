@@ -108,9 +108,9 @@
       </section>
 
       <section class="results hidden" id="results">
-        <img src="./assets/images/icon-completed.svg" />
-        <h2>Baseline Established</h2>
-        <p>
+        <img class="icon-completed" src="./assets/images/icon-completed.svg" />
+        <h2 style="text-align: center">Baseline Established</h2>
+        <p style="text-align: center">
           You've set the bar. Now the real challenge begins -- Time to beat it
         </p>
         <div class="result-grid">
@@ -124,7 +124,12 @@
           </div>
           <div class="result-item">
             <span class="result-label">Characters</span>
-            <span class="result-value" id="result-chars">0/0</span>
+            <span class="result-value" id="result-chars">
+              <span id="correct-chars-count">0</span>
+              <span style="color: #f43f5e"
+                >/<span id="wrong-chars-count">0</span></span
+              >
+            </span>
           </div>
         </div>
         <button type="button" class="restart-button">
