@@ -1,10 +1,7 @@
 // import api from "./data.json";
 const typingContainer = document.querySelector(".typing-area");
 const FinalResult = document.getElementById("results");
-
-const correctCharsDisplay = document.getElementById("correct-chars-count");
-const wrongCharsDisplay = document.getElementById("wrong-chars-count");
-
+const topBar = document.querySelector(".top-bar");
 const passage = document.getElementById("passage");
 const startBtn = document.getElementById("startBtn");
 const difficulty = document.querySelectorAll(
@@ -18,7 +15,6 @@ const mode = document.querySelectorAll(
 console.log(mode);
 const hint = document.querySelector(".hint");
 
-let totalMistakes = 0;
 let secondPassed = 0;
 let timerInterval = 0;
 let selectedMode = "timed (60s)";
@@ -41,7 +37,8 @@ async function difficultyFuntion() {
   const data = await loadPassage();
 
   if (data) {
-    passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
+    passage.innerText =
+      data.hard[Math.floor(Math.random() * data.hard.length)].text;
 
     difficulty.forEach((button) => {
       button.addEventListener("click", () => {
@@ -55,7 +52,7 @@ async function difficultyFuntion() {
 
         let buttonText = button.textContent.trim().toLowerCase();
         if (buttonText === "easy") {
-          let easy = data.easy[Math.round(Math.random() * 10)];
+          let easy = data.easy[Math.floor(Math.random() * data.easy.length)];
           console.log(easy);
           // passage.innerText = easy.text;
           passage.textContent = "";
@@ -70,7 +67,8 @@ async function difficultyFuntion() {
             console.log(span);
           });
         } else if (buttonText === "medium") {
-          let medium = data.medium[Math.round(Math.random() * 10)];
+          let medium =
+            data.medium[Math.floor(Math.random() * data.medium.length)];
           console.log(medium);
           passage.innerText = "";
 
@@ -82,7 +80,7 @@ async function difficultyFuntion() {
             passage.appendChild(span);
           });
         } else {
-          let hard = data.hard[Math.round(Math.random() * 10)];
+          let hard = data.hard[Math.floor(Math.random() * data.hard.length)];
           console.log(hard);
           passage.innerText = "";
 
@@ -142,11 +140,12 @@ async function difficultyFuntion() {
             console.log("time up");
 
             typingContainer.classList.add("hidden");
+            topBar.classList.add("hidden");
             FinalResult.classList.remove("hidden");
           }
         } else if (selectedMode === "passage") {
           console.log("Passage mode shuru! Koi timer nahi chalega.");
-          // passage.innerText = data.hard[Math.round(Math.random() * 10)].text;
+          // passage.innerText = data.hard[Math.floor(Math.random() * 10)].text;
         }
       }, 1000);
     }
@@ -162,33 +161,26 @@ async function difficultyFuntion() {
     const lastInputIndex = userTypedValue.length - 1;
     console.log(lastInputIndex);
 
-    if (e.inputType !== "deleteContentBackward" && lastInputIndex >= 0) {
-      const currentSpan = spans[lastInputIndex];
-      const currentChar = userTypedValue[lastInputIndex];
+    // user ne poora passage khatam kar liya?
+    if (selectedMode === "passage" && userTypedValue.length === spans.length) {
+      // 1. Timer ko furan rokh do!
+      clearInterval(timerInterval);
 
-      // user ne poora passage khatam kar liya?
-      if (
-        selectedMode === "passage" &&
-        userTypedValue.length === spans.length
-      ) {
-        // 1. Timer ko furan rokh do!
-        clearInterval(timerInterval);
+      inputField.disabled = true;
 
-        inputField.disabled = true;
+      console.log(
+        "Zabardast! User ne passage khatam kar liya. Total seconds lage:",
+        secondPassed,
+      );
 
-        console.log(
-          "Zabardast! User ne passage khatam kar liya. Total seconds lage:",
-          secondPassed,
-        );
+      typingContainer.classList.add("hidden");
+      topBar.classList.add("hidden");
 
-        typingContainer.classList.add("hidden");
-        FinalResult.classList.remove("hidden");
-      }
-      if (currentChar !== currentSpan.textContent) {
-        totalMistakes++;
-        console.log("Total Mistakes Done So Far:", totalMistakes);
-      }
+      FinalResult.classList.remove("hidden");
     }
+
+    let totalMistakes = 0;
+
     spans.forEach((span, index) => {
       const userChar = userTypedValue[index];
       console.log(userChar);
@@ -214,6 +206,7 @@ async function difficultyFuntion() {
       } else {
         // Agar match nahi hua (galti ki)
         span.classList.add("incorrect");
+        totalMistakes++;
         span.classList.remove("correct");
       }
     });
@@ -221,14 +214,16 @@ async function difficultyFuntion() {
     let accuracyVal = 100;
     const accuracy = document.querySelectorAll("#accuracy , #result-accuracy");
 
+    let correctCharCount = userTypedValue.length - totalMistakes;
+
+    if (correctCharCount < 0) {
+      correctCharCount = 0;
+    }
+
     if (userTypedValue.length > 0) {
-      let correctChar = userTypedValue.length - totalMistakes;
-
-      if (correctChar < 0) {
-        correctChar = 0;
-      }
-
-      accuracyVal = Math.round((correctChar / userTypedValue.length) * 100);
+      accuracyVal = Math.round(
+        (correctCharCount / userTypedValue.length) * 100,
+      );
     }
 
     accuracy.forEach((element) => {
@@ -250,8 +245,13 @@ async function difficultyFuntion() {
       element.textContent = wpmVal;
     });
 
-    correctCharsDisplay.textContent = correctChar;
-    wrongCharsDisplay.textContent = totalMistakes;
+    const liveCorrectDisplay = document.getElementById("correct-chars-count");
+    const liveWrongDisplay = document.getElementById("wrong-chars-count");
+
+    if (liveCorrectDisplay && liveWrongDisplay) {
+      liveCorrectDisplay.textContent = correctCharCount;
+      liveWrongDisplay.textContent = totalMistakes;
+    }
   });
 
   // Screen par kahin bhi click ho, focus wapas input box par le aao
